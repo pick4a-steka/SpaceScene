@@ -6,6 +6,7 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
+        mesh.cpp \
         model.cpp \
         raii.cpp
 
@@ -18,6 +19,7 @@ INCLUDEPATH += \
         /usr/local/assimp-master/include/
 
 HEADERS += \
+    mesh.h \
     model.h \
     raii.h \
     stb_image.h

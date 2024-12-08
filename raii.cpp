@@ -22,6 +22,11 @@ GLuint VAO::getID() const {
     return id;
 }
 
+void VAO::setVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer) {
+    glEnableVertexAttribArray(index); // включаем указанный массив атрибутов вершин
+    glVertexAttribPointer(index, size, type, normalized, stride, pointer); // устанавливается указатель на чтение в буфере вершины
+}
+
 // ===============
 
 // ===== VBO =====
@@ -44,6 +49,10 @@ void VBO::unbind(GLenum target) const {
 
 GLuint VBO::getID() const {
     return id;
+}
+
+void VBO::setData(GLenum target, const void *data, GLsizeiptr size, GLenum usage) const {
+    glBufferData(target, size, data, usage); // загружаем данные
 }
 
 // ==============
@@ -109,16 +118,29 @@ GLuint Texture::getID() const {
 // ===== Shader =====
 
 Shader::Shader(const std::string& vertexSource, const std::string &fragmentSource) {
-    // Создание и компиляция вершинного шейдера
+    std::string vertexCode;
+    std::string fragmentCode;
+
+    // Загружаем код шейдеров из файлов
+    std::ifstream vShaderFile(vertexSource);
+    std::ifstream fShaderFile(fragmentSource);
+    std::stringstream vShaderStream, fShaderStream;
+
+    vShaderStream << vShaderFile.rdbuf();
+    fShaderStream << fShaderFile.rdbuf();
+    vertexCode = vShaderStream.str();
+    fragmentCode = fShaderStream.str();
+
+    // Компиляция вершинного шейдера
+    const char *vShaderCode = vertexCode.c_str();
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const char *vShaderCode = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vShaderCode, nullptr);
     glCompileShader(vertexShader);
     checkCompileErrors(vertexShader, "VERTEX");
 
-    // Создание и компиляция фрагментного шейдера
+    // Компиляция фрагментного шейдера
+    const char *fShaderCode = fragmentCode.c_str();
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    const char *fShaderCode = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &fShaderCode, nullptr);
     glCompileShader(fragmentShader);
     checkCompileErrors(fragmentShader, "FRAGMENT");
@@ -147,6 +169,10 @@ GLuint Shader::getID() const {
     return id;
 }
 
+void Shader::setFloat(const std::string &name, float value) const {
+    glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+}
+
 void Shader::checkCompileErrors(GLuint shader, const std::string &type) {
     GLint success;
     GLchar infoLog[1024];
@@ -165,3 +191,63 @@ void Shader::checkCompileErrors(GLuint shader, const std::string &type) {
         }
     }
 }
+
+// ===============
+
+// ====== EBO =====
+
+EBO::EBO() : id(0) {
+    glGenBuffers(1, &id);
+    if (id == 0) {
+        std::cerr << "Error, EBO doesn't create" << std::endl;
+    }
+}
+
+EBO::EBO(const std::vector<GLuint> &indices) : EBO() {
+    bind(GL_ELEMENT_ARRAY_BUFFER);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+    unbind(GL_ELEMENT_ARRAY_BUFFER);
+}
+
+EBO::~EBO() {
+    if (id != 0) {
+        glDeleteBuffers(1, &id);
+    }
+}
+
+EBO::EBO(EBO&& other) noexcept : id(other.id) {
+    other.id = 0; // обнуляем старый объект
+}
+
+EBO& EBO::operator=(EBO &&other) noexcept {
+    if (this != &other) {
+        // удаляем старый буфер
+        if (id != 0) {
+            glDeleteBuffers(1, &id);
+        }
+
+        // Перемещение
+        id = other.id;
+        other.id = 0;
+    }
+
+    return *this;
+}
+
+void EBO::bind(GLenum target) const {
+    glBindBuffer(target, id);
+}
+
+void EBO::unbind(GLenum target) const {
+    glBindBuffer(target, 0);
+}
+
+void EBO::setData(GLenum target, const void *data, GLsizeiptr size, GLenum usage) {
+    glBufferData(target, size, data, usage);
+}
+
+GLenum EBO::getID() const {
+    return id;
+}
+
+// ===============
