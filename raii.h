@@ -62,7 +62,7 @@ private:
 class Shader {
 public:
     Shader() {}
-    Shader(const std::string &vertexSource, const std::string &fragmentSource);
+    Shader(const char *vertexPath, const char *fragmentPath);
     ~Shader();
 
     void use() const;

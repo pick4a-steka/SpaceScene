@@ -16,10 +16,18 @@ LIBS += \
 
 INCLUDEPATH += \
         /usr/local/SFML-2.6.2/include/SFML \
-        /usr/local/assimp-master/include/
+        /usr/local/assimp-master/include/ \
+        /usr/local/soil/include/
 
 HEADERS += \
     mesh.h \
     model.h \
     raii.h \
     stb_image.h
+
+DISTFILES += \
+    spaceship/license.txt \
+    spaceship/scene.bin \
+    spaceship/scene.gltf \
+    spaceship/textures/Ship_baseColor.png \
+    spaceship/textures/Ship_emissive.png

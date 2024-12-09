@@ -5,6 +5,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+//#include <SOIL/SOIL.h>
 
 #include "raii.h"
 #include "mesh.h"
@@ -19,6 +20,7 @@ public:
 private:
     // Данные модели
     std::vector<Mesh> meshes;
+    std::vector<Txtr> textures_loaded;
     std::string directory;
 
     // Методы
@@ -26,7 +28,7 @@ private:
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Txtr> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
-    unsigned int TextureFromFile(std::string str, std::string &directory);
+    unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 };
 
 /*class Model {

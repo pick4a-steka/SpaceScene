@@ -117,44 +117,65 @@ GLuint Texture::getID() const {
 
 // ===== Shader =====
 
-Shader::Shader(const std::string& vertexSource, const std::string &fragmentSource) {
+Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+    // 1. извлечь исходный код вершины/фрагмента из filePath
     std::string vertexCode;
     std::string fragmentCode;
+    std::ifstream vShaderFile;
+    std::ifstream fShaderFile;
 
-    // Загружаем код шейдеров из файлов
-    std::ifstream vShaderFile(vertexSource);
-    std::ifstream fShaderFile(fragmentSource);
-    std::stringstream vShaderStream, fShaderStream;
+    // убедиться, что объекты ifstream могут генерировать ислючения
+    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        // открываем файлы
+        vShaderFile.open(vertexPath);
+        fShaderFile.open(fragmentPath);
+        std::stringstream vShaderStream, fShaderStream;
 
-    vShaderStream << vShaderFile.rdbuf();
-    fShaderStream << fShaderFile.rdbuf();
-    vertexCode = vShaderStream.str();
-    fragmentCode = fShaderStream.str();
+        // считывание содержимого буфера файла в потоки
+        vShaderStream << vShaderFile.rdbuf();
+        fShaderStream << fShaderFile.rdbuf();
 
-    // Компиляция вершинного шейдера
+        // закрыть обработчики файлов
+        vShaderFile.close();
+        fShaderFile.close();
+
+        // конвертируем поток в строку
+        vertexCode = vShaderStream.str();
+        fragmentCode = fShaderStream.str();
+    }  catch (std::ifstream::failure &e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+    }
+
     const char *vShaderCode = vertexCode.c_str();
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vShaderCode, nullptr);
-    glCompileShader(vertexShader);
-    checkCompileErrors(vertexShader, "VERTEX");
-
-    // Компиляция фрагментного шейдера
     const char *fShaderCode = fragmentCode.c_str();
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fShaderCode, nullptr);
-    glCompileShader(fragmentShader);
-    checkCompileErrors(fragmentShader, "FRAGMENT");
 
-    // Линковка программы
+    // 2. Компилируем шейдеры
+    unsigned int vertex, fragment;
+
+    // вершинный шейдер
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vShaderCode, nullptr);
+    glCompileShader(vertex);
+    checkCompileErrors(vertex, "VERTEX");
+
+    // фрагментный шейдер
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fShaderCode, nullptr);
+    glCompileShader(fragment);
+    checkCompileErrors(fragment, "FRAGMENT");
+
+    // шейдерная программа
     id = glCreateProgram();
-    glAttachShader(id, vertexShader);
-    glAttachShader(id, fragmentShader);
+    glAttachShader(id, vertex);
+    glAttachShader(id, fragment);
     glLinkProgram(id);
     checkCompileErrors(id, "PROGRAM");
 
-    // Уничтожение промежуточных шейдеров
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // удаление промежуточных шейдеров
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
 }
 
 Shader::~Shader() {
