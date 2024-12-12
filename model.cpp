@@ -29,7 +29,8 @@ void Model::loadModel(const std::string &modelPath) {
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
     // Обрабатываем все полигональные сетки в узле(если они есть)
-    for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
+    unsigned int num_meshes = node->mNumMeshes;
+    for (unsigned int i = 0; i < num_meshes; ++i) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
     }
@@ -56,10 +57,12 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         vector.z = mesh->mVertices[i].z;
         vertex.position = vector;
 
-        vector.x = mesh->mNormals[i].x;
-        vector.y = mesh->mNormals[i].y;
-        vector.z = mesh->mNormals[i].z;
-        vertex.normal = vector;
+        if (mesh->HasNormals()) {
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.normal = vector;
+        }
 
         if (mesh->mTextureCoords[0]) { // сетка обладает набором текстурных координат?
             glm::vec2 vec;
@@ -90,6 +93,13 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         std::vector<Txtr> specularMaps = loadMaterialTextures(material, \
                                               aiTextureType_SPECULAR, "texture_specular");
+        std::vector<Txtr> normalMaps = loadMaterialTextures(material, \
+                                              aiTextureType_HEIGHT, "texture_normal");
+        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+        std::vector<Txtr> heightMaps = loadMaterialTextures(material, \
+                                              aiTextureType_AMBIENT, "texture_height");
+
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
@@ -114,7 +124,7 @@ std::vector<Txtr> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType typ
         if (!skip) {
             // Если текстура не была загружена - сделаем это
             Txtr texture;
-            texture.id = TextureFromFile(str.C_Str(), directory);
+            texture.id = TextureFromFile(str.C_Str(), this->directory);
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
@@ -126,7 +136,7 @@ std::vector<Txtr> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType typ
     return textures;
 }
 
-unsigned int Model::TextureFromFile(const char *path, const std::string &directory, bool gamma) {
+unsigned int Model::TextureFromFile(const char *path, const std::string &directory) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 

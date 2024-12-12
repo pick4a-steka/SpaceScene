@@ -1,18 +1,23 @@
 #pragma once
 
+#include "raii.h"
+
 #include <vector>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <assimp/postprocess.h>
 
-
-#include "raii.h"
+#define MAX_BONE_INFLUENCE 4
 
 // Определение структуры вершины
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texCoords;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 // Структура для хранения текстурных данных
@@ -35,10 +40,11 @@ private:
     std::vector<unsigned int> indices;
     std::vector<Txtr> textures;
 
-    // OpenGL объекты с автогенерацией буфера
-    VAO vao;
+    // OpenGL объекты
+    /*VAO vao;
     VBO vbo;
-    EBO ebo;
+    EBO ebo;*/
+    unsigned int VAO, VBO, EBO;
 
     // Метод для настройки буферов
     void setupMesh();

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Razorback spaceship 8k resolution
+* source:	https://sketchfab.com/3d-models/razorback-spaceship-8k-resolution-8a5400a1cd9f4f3897ff19e9855d852b
+* author:	mohamedhussien (https://sketchfab.com/mohamedhussien)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Razorback spaceship 8k resolution" (https://sketchfab.com/3d-models/razorback-spaceship-8k-resolution-8a5400a1cd9f4f3897ff19e9855d852b) by mohamedhussien (https://sketchfab.com/mohamedhussien) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
