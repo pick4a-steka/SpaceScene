@@ -12,7 +12,7 @@ SOURCES += \
         raii.cpp
 
 LIBS += \
-        -L./usr/local/SFML-2.6.2/lib/ -lsfml-graphics -lsfml-window -lsfml-system \
+        -L./usr/local/SFML-2.6.2/lib/ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio \
         -L/usr/local/assimp-master/bin/ -lassimp \
         -lglfw -lGLEW -lGL
 
@@ -30,10 +30,14 @@ HEADERS += \
     stb_image.h
 
 DISTFILES += \
+    lamp_model.fsh \
     model.fs \
+    model.fsh \
     model.vs \
+    model.vsh \
     spaceship/license.txt \
     spaceship/scene.bin \
     spaceship/scene.gltf \
     spaceship/textures/Ship_baseColor.png \
-    spaceship/textures/Ship_emissive.png
+    spaceship/textures/Ship_emissive.png \
+    specular_model.fsh

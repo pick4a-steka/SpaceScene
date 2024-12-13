@@ -88,18 +88,21 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     // обработка материала
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
         std::vector<Txtr> diffuseMaps = loadMaterialTextures(material, \
                                               aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
         std::vector<Txtr> specularMaps = loadMaterialTextures(material, \
                                               aiTextureType_SPECULAR, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
         std::vector<Txtr> normalMaps = loadMaterialTextures(material, \
                                               aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
         std::vector<Txtr> heightMaps = loadMaterialTextures(material, \
                                               aiTextureType_AMBIENT, "texture_height");
-
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 

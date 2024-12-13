@@ -16,8 +16,6 @@ struct Vertex {
     glm::vec2 texCoords;
     glm::vec3 tangent;
     glm::vec3 bitangent;
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 // Структура для хранения текстурных данных
