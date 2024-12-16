@@ -34,6 +34,10 @@ public:
         return glm::lookAt(Position, Position + Front, Up);
     }
 
+    glm::mat4 GetViewMatrix(glm::vec3 cameraTarget) {
+        return glm::lookAt(Position, cameraTarget, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+
     void ProcessKeyboard(int direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
